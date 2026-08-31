@@ -1,0 +1,25 @@
+# AgentRadar
+
+> A review board where engineers rate and review the AI coding tools, MCP
+> servers, and agent skills they've actually used in production.
+
+Teams are adopting AI coding tools faster than they can evaluate them.
+AgentRadar gives a shared, honest signal — star ratings and written
+reviews from real usage — beyond vendor pages and marketing claims.
+Tools are organized by category (IDE plugin, CLI, MCP server, agent
+skill) and can be filtered and browsed from the home page.
+
+## Key pages
+
+- [Home](https://agentradar.app/): Browse and filter the tool catalog by
+  category.
+- Tool detail pages (`/tools/[slug]`): A specific tool's description,
+  average rating, and reviews, with a form to submit a new review.
+
+## Technical implementation
+
+- **Framework:** Next.js (Pages Router), TypeScript, Tailwind CSS
+- **Database:** PostgreSQL
+- **State management:** React Query
+
+Source and full documentation: https://github.com/Younique98/agentradar
