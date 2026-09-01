@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useId, useState } from 'react';
 import Star from '@/components/Star';
 
 interface StarRatingProps {
@@ -14,6 +14,11 @@ const StarRating: React.FC<StarRatingProps> = ({
   onRatingChange,
 }) => {
   const [selectedRating, setSelectedRating] = useState<number>(rating);
+  // Every rendered instance (the tool detail page's own average-rating
+  // display, plus one per review card) previously hardcoded the same
+  // "rating"/"rating-label" ids - invalid duplicate HTML ids as soon as
+  // more than one instance is on the page, which is the normal case.
+  const labelId = useId();
 
   // In read-only mode the `rating` prop is the sole source of truth, so
   // keep local state in sync as it changes (e.g. after a new review
@@ -49,11 +54,11 @@ const StarRating: React.FC<StarRatingProps> = ({
   };
 
   return (
-    <section className="flex items-center" aria-labelledby="rating-label">
-      <h2 id="rating-label" className="sr-only">
+    <section className="flex items-center" aria-labelledby={labelId}>
+      <h2 id={labelId} className="sr-only">
         {allowUserInput ? 'Select a star rating' : 'User rating'}
       </h2>
-      <div role="radiogroup" aria-labelledby="rating-label" id="rating">
+      <div role="radiogroup" aria-labelledby={labelId}>
         {[...Array(5)].map((_, index) => (
           <Star
             key={index}
