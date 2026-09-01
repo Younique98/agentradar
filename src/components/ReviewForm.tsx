@@ -48,15 +48,18 @@ export const ReviewForm: React.FC<IReviewForm> = ({ toolName }) => {
     }
   };
 
+  // Enter/Space activation is handled natively by the <button> itself -
+  // this only needs to cover roving focus between stars with the arrow
+  // keys, matching radiogroup keyboard conventions. starId is 1-based,
+  // matching the rating value the button's onClick sets.
   const handleKeyDown = (event: React.KeyboardEvent, starId: number) => {
-    if (event.key === 'Enter' || event.key === ' ') {
-      setValue('rating', starId);
-    }
     if (event.key === 'ArrowRight' && starId < 5) {
       setValue('rating', starId + 1);
+      document.getElementById(`review-star-${starId + 1}`)?.focus();
     }
     if (event.key === 'ArrowLeft' && starId > 1) {
       setValue('rating', starId - 1);
+      document.getElementById(`review-star-${starId - 1}`)?.focus();
     }
   };
 
@@ -113,23 +116,23 @@ export const ReviewForm: React.FC<IReviewForm> = ({ toolName }) => {
           {[...Array(5)].map((_, index) => (
             <button
               key={index}
+              id={`review-star-${index + 1}`}
               type="button"
               role="radio"
               aria-checked={rating === index + 1}
               aria-label={`${index + 1} star${index !== 0 ? 's' : ''}`}
               onClick={() => setValue('rating', index + 1)}
+              onKeyDown={
+                allowUserInput
+                  ? event => handleKeyDown(event, index + 1)
+                  : undefined
+              }
               className={clsx(
                 'w-8 h-8 flex items-center justify-center rounded-full ',
                 rating > index ? 'text-yellow-500' : 'text-gray-400',
               )}
             >
-              <Star
-                starId={index}
-                marked={index < rating}
-                {...(allowUserInput && {
-                  onKeyDown: event => handleKeyDown(event, index),
-                })}
-              />
+              <Star starId={index} marked={index < rating} interactive={false} />
             </button>
           ))}
         </div>
