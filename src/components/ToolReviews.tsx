@@ -6,6 +6,9 @@ import { RefObject, useEffect, useRef } from 'react';
 import { ReviewForm } from './ReviewForm';
 import clsx from 'clsx';
 
+const pageButtonClass =
+  'px-5 py-2 rounded-lg border border-line font-semibold text-sm text-ink-secondary hover:border-signal-text hover:text-ink-primary transition disabled:opacity-40 disabled:pointer-events-none';
+
 const ToolReviews = () => {
   const {
     tool,
@@ -29,7 +32,7 @@ const ToolReviews = () => {
 
   if (isFetching || !tool) {
     return (
-      <div className="p-4">
+      <div className="space-y-3">
         <SkeletonLoader />
         <SkeletonLoader />
         <SkeletonLoader />
@@ -38,9 +41,9 @@ const ToolReviews = () => {
   }
 
   return (
-    <div className="p-4 relative">
+    <div>
       <h2
-        className="text-2xl text-center font-sans font-bold mb-10"
+        className="font-display text-2xl font-bold text-ink-primary text-center mb-8"
         ref={reviewSectionRef}
       >
         Reviews
@@ -49,26 +52,26 @@ const ToolReviews = () => {
       <ReviewForm toolName={tool.name} />
 
       {reviews.length > 0 ? (
-        <ul
-          className="space-y-4 flex flex-col items-center justify-center min-h-[150px]"
-          aria-live="polite"
-        >
+        <ul className="space-y-3 max-w-3xl mx-auto" aria-live="polite">
           {reviews.map(review => (
             <li
               key={review.id}
-              className="border p-5 bg-white rounded-lg shadow-md w-full max-w-3xl mx-auto min-w-[300px] flex flex-col transition-all duration-300 ease-in-out hover:shadow-lg"
+              className="rounded-xl border border-line bg-surface p-5"
             >
-              <p className="font-semibold text-lg">{review.author}</p>
-              <StarRating
-                rating={review.rating}
-                aria-label={`Rating: ${review.rating} stars`}
-              />
+              <div className="flex items-center justify-between gap-3">
+                <p className="font-display font-bold text-ink-primary">{review.author}</p>
+                <StarRating
+                  rating={review.rating}
+                  aria-label={`Rating: ${review.rating} stars`}
+                  size="sm"
+                />
+              </div>
               {review.review ? (
-                <p className="text-gray-700 text-sm leading-relaxed break-words">
+                <p className="mt-2 text-sm text-ink-secondary leading-relaxed break-words">
                   {review.review}
                 </p>
               ) : (
-                <p className="italic text-gray-500 text-sm">
+                <p className="mt-2 text-sm text-ink-muted italic">
                   No written review
                 </p>
               )}
@@ -76,15 +79,15 @@ const ToolReviews = () => {
           ))}
         </ul>
       ) : (
-        <p className="italic text-gray-500 text-center">
+        <p className="text-center text-ink-muted italic">
           No reviews yet — be the first to review {tool.name}.
         </p>
       )}
 
-      <div className="flex justify-center mt-6 space-x-4">
+      <div className="flex justify-center mt-8 gap-3">
         {onFirstPage && (
           <button
-            className="px-8 py-3 border rounded-lg bg-gradient-to-r from-primary-600 to-primary-700 text-white font-semibold hover:bg-primary-700 transition-all"
+            className={pageButtonClass}
             type="button"
             aria-label={`Go to previous page, page ${page - 1}`}
             aria-disabled={page === 1 || isLoading}
@@ -101,9 +104,7 @@ const ToolReviews = () => {
             aria-label={`Go to next page, page ${page + 1}`}
             aria-disabled={!hasMoreReviews || isLoading}
             tabIndex={!hasMoreReviews || isLoading ? -1 : 0}
-            className={clsx(
-              'px-8 py-3 border rounded-lg bg-gradient-to-r from-primary-600 to-primary-700 text-white font-semibold hover:bg-primary-700 transition-all',
-            )}
+            className={clsx(pageButtonClass)}
           >
             Next
           </button>

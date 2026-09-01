@@ -6,12 +6,14 @@ interface StarRatingProps {
   onRatingSelect?: (rating: number) => void;
   allowUserInput?: boolean;
   onRatingChange?: (rating: number) => void;
+  size?: 'sm' | 'lg';
 }
 
 const StarRating: React.FC<StarRatingProps> = ({
   rating,
   allowUserInput = false,
   onRatingChange,
+  size = 'lg',
 }) => {
   const [selectedRating, setSelectedRating] = useState<number>(rating);
   // Every rendered instance (the tool detail page's own average-rating
@@ -67,6 +69,7 @@ const StarRating: React.FC<StarRatingProps> = ({
             allowUserInput={allowUserInput}
             onKeyDown={handleKeyDown}
             onClick={handleRatingChange}
+            size={size}
           />
         ))}
       </div>

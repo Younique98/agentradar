@@ -16,6 +16,10 @@ interface IReviewForm {
   toolName: string;
 }
 
+const inputClass =
+  'border border-line rounded-lg px-3 py-2 bg-bg text-ink-primary focus:outline-none focus:ring-2 focus:ring-signal-text w-full';
+const labelClass = 'block text-sm font-semibold text-ink-secondary mb-1';
+
 export const ReviewForm: React.FC<IReviewForm> = ({ toolName }) => {
   const { submitReview } = useToolDetail();
   const {
@@ -68,31 +72,33 @@ export const ReviewForm: React.FC<IReviewForm> = ({ toolName }) => {
       role="form"
       aria-labelledby="review-form-title"
       onSubmit={handleSubmit(onSubmit)}
-      className="p-4 border rounded shadow mb-8 md:w-3/4 mx-auto"
+      className="rounded-xl border border-line bg-surface p-6 mb-8 md:w-3/4 mx-auto space-y-4"
     >
-      <h2 id="review-form-title" className="text-lg font-semibold mb-2">
+      <h2 id="review-form-title" className="font-display text-lg font-bold text-ink-primary">
         Review {toolName}
       </h2>
 
       {/* Author Name */}
-      <label className="block mb-2" htmlFor="author">
-        <span className="text-sm font-medium">Your Name</span>{' '}
-      </label>
-      <input
-        id="author"
-        aria-labelledby="author"
-        type="text"
-        {...register('author', { required: 'Name is required.' })}
-        placeholder="Your name"
-        className="border rounded border-gray-300 px-4 py-2 focus:ring-primary-500 focus:border-primary-500 w-full"
-      />
-      {errors.author && (
-        <p className="text-red-500 text-sm">{errors.author.message}</p>
-      )}
+      <div>
+        <label className={labelClass} htmlFor="author">
+          Your Name
+        </label>
+        <input
+          id="author"
+          aria-labelledby="author"
+          type="text"
+          {...register('author', { required: 'Name is required.' })}
+          placeholder="Your name"
+          className={inputClass}
+        />
+        {errors.author && (
+          <p className="mt-1 text-sm text-signal-text">{errors.author.message}</p>
+        )}
+      </div>
 
       {/* Star Rating */}
-      <div className="flex flex-col">
-        <label htmlFor="rating" className="block text-sm font-medium">
+      <div>
+        <label id="rating-label" htmlFor="rating" className={labelClass}>
           Rating
         </label>
 
@@ -111,7 +117,7 @@ export const ReviewForm: React.FC<IReviewForm> = ({ toolName }) => {
         <div
           role="radiogroup"
           aria-labelledby="rating-label"
-          className="flex space-x-2"
+          className="flex gap-1"
         >
           {[...Array(5)].map((_, index) => (
             <button
@@ -128,8 +134,10 @@ export const ReviewForm: React.FC<IReviewForm> = ({ toolName }) => {
                   : undefined
               }
               className={clsx(
-                'w-8 h-8 flex items-center justify-center rounded-full ',
-                rating > index ? 'text-yellow-500' : 'text-gray-400',
+                'w-9 h-9 flex items-center justify-center rounded-full transition',
+                rating > index
+                  ? 'bg-surface-2 text-signal-text'
+                  : 'text-ink-muted hover:text-ink-secondary',
               )}
             >
               <Star starId={index} marked={index < rating} interactive={false} />
@@ -139,25 +147,26 @@ export const ReviewForm: React.FC<IReviewForm> = ({ toolName }) => {
 
         {/* Error Message */}
         {errors.rating && (
-          <p className="text-red-500 text-sm">{errors.rating.message}</p>
+          <p className="mt-1 text-sm text-signal-text">{errors.rating.message}</p>
         )}
       </div>
 
       {/* Review Text */}
-      <label>
-        <span>Your Review (Optional)</span>
+      <div>
+        <label className={labelClass} htmlFor="review">
+          Your Review (Optional)
+        </label>
         <textarea
-          placeholder="Write your review..."
+          id="review"
+          placeholder="What was it like to use? What would you tell another engineer?"
+          rows={3}
           {...register('review')}
-          className="border rounded-md px-4 py-2 h-24  border-gray-300 focus:ring-primary-500 focus:border-primary-500 w-full"
+          className={inputClass}
         />
-      </label>
+      </div>
+
       {/* Submit Button */}
-      <Button
-        type="submit"
-        disabled={isSubmitting || !rating}
-        className="w-full bg-primary-600 border text-white font-semibold py-3 p-2 rounded-md transition-all hover:bg-primary-700 mt-3 disabled:opacity-200"
-      >
+      <Button type="submit" disabled={isSubmitting || !rating}>
         {isSubmitting ? 'Submitting...' : 'Submit Review'}
       </Button>
     </form>
