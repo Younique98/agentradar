@@ -22,9 +22,9 @@ export const Button: React.FC<ButtonProps> = ({
       onClick={onClick}
       disabled={disabled}
       className={clsx(
-        'inline-flex justify-center items-center transition-colors font-display appearance-none',
-        'ring-offset-2 focus:ring-2 focus-visible:ring-2 text-center w-full outline-none border-0 rounded',
-        'text-white bg-primary-600 hover:bg-primary-700 focus:ring-primary-100 focus-visible:ring-primary-100',
+        'inline-flex justify-center items-center transition-colors font-sans font-semibold appearance-none',
+        'ring-offset-2 focus-visible:ring-2 focus-visible:ring-signal-text text-center w-full outline-none border-0 rounded-lg',
+        'text-white bg-signal hover:bg-signal-hover',
         'cursor-pointer px-4 py-3 text-base',
         disabled && 'opacity-50 cursor-not-allowed',
         className,

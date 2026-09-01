@@ -22,7 +22,7 @@ const ToolDetail = () => {
 
   if (isLoading || !tool) {
     return (
-      <div className="p-6 md:p-10 max-w-3xl mx-auto">
+      <div className="px-6 md:px-10 py-12 max-w-3xl mx-auto">
         <SkeletonLoader />
       </div>
     );
@@ -30,14 +30,14 @@ const ToolDetail = () => {
 
   if (isError) {
     return (
-      <div className="p-6 md:p-10 max-w-3xl mx-auto text-center text-red-500">
+      <div className="px-6 md:px-10 py-12 max-w-3xl mx-auto text-center text-signal-text font-semibold">
         Failed to load this tool. Please try again later.
       </div>
     );
   }
 
   return (
-    <div className="p-6 md:p-10 max-w-3xl mx-auto">
+    <div className="px-6 md:px-10 py-12 max-w-3xl mx-auto">
       <Seo
         title={tool.name}
         description={tool.description}
@@ -45,44 +45,55 @@ const ToolDetail = () => {
       />
       <Link
         href="/"
-        className="text-sm font-semibold text-primary-600 hover:underline"
+        className="font-mono text-xs uppercase tracking-wider font-semibold text-ink-secondary hover:text-ink-primary transition"
       >
         ← All tools
       </Link>
 
-      <div className="mt-4 flex items-start justify-between gap-4">
+      <div className="mt-4 flex items-start justify-between gap-6 flex-wrap">
         <div>
-          <h1 className="text-3xl font-extrabold tracking-tight">
+          <div className="mb-2">
+            <CategoryBadge category={tool.category} />
+          </div>
+          <h1 className="font-display text-3xl sm:text-4xl font-extrabold tracking-tight text-ink-primary">
             {tool.name}
           </h1>
-          <div className="mt-2 flex items-center gap-3">
-            <CategoryBadge category={tool.category} />
-            <div className="flex items-center gap-2">
-              <StarRating rating={Math.round(tool.avg_rating ?? 0)} />
-              <span className="text-sm text-gray-500">
-                {tool.review_count === 0
-                  ? 'No reviews yet'
-                  : `${(tool.avg_rating ?? 0).toFixed(1)} (${tool.review_count} review${tool.review_count === 1 ? '' : 's'})`}
-              </span>
-            </div>
+          <div className="mt-2 flex items-center gap-2">
+            <StarRating rating={Math.round(tool.avg_rating ?? 0)} />
+            <span className="font-mono text-sm text-ink-muted">
+              {tool.review_count === 0
+                ? 'no reviews yet'
+                : `${tool.review_count} review${tool.review_count === 1 ? '' : 's'}`}
+            </span>
           </div>
         </div>
+
+        {tool.review_count > 0 && (
+          <div className="rounded-xl border border-line bg-surface px-5 py-3 text-center shrink-0">
+            <p className="font-mono text-3xl font-bold tabular-nums text-signal-text">
+              {(tool.avg_rating ?? 0).toFixed(1)}
+            </p>
+            <p className="font-mono text-[10px] uppercase tracking-wider text-ink-muted">
+              avg rating
+            </p>
+          </div>
+        )}
       </div>
 
-      <p className="mt-4 text-gray-700 leading-relaxed">{tool.description}</p>
+      <p className="mt-6 text-ink-secondary leading-relaxed">{tool.description}</p>
 
       {tool.homepage_url && (
         <a
           href={tool.homepage_url}
           target="_blank"
           rel="noreferrer"
-          className="mt-3 inline-block text-sm font-semibold text-primary-600 hover:underline"
+          className="mt-3 inline-block text-sm font-semibold text-signal-text hover:underline"
         >
           Visit homepage →
         </a>
       )}
 
-      <div className="mt-10 border-t pt-6">
+      <div className="mt-12 border-t border-line pt-8">
         <ToolReviews />
       </div>
     </div>

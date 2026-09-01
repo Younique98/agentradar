@@ -1,12 +1,9 @@
-import { Inter } from 'next/font/google';
 import { Seo } from '@/components/Seo';
 import { ToolsProvider, useTools } from '@/context/ToolsContext';
 import { ToolCard } from '@/components/ToolCard';
 import { SkeletonLoader } from '@/components/SkeletonLoader';
 import { CATEGORY_LABELS, ToolCategory } from '@/data/Tool';
 import clsx from 'clsx';
-
-const inter = Inter({ subsets: ['latin'] });
 
 const CATEGORY_FILTERS: (ToolCategory | null)[] = [
   null,
@@ -20,28 +17,33 @@ const ToolCatalog = () => {
   const { tools, isLoading, isError, category, setCategory } = useTools();
 
   return (
-    <div className="p-6 md:p-10 max-w-6xl mx-auto">
-      <div className="text-center mb-10">
-        <h1 className="text-4xl font-extrabold tracking-tight mb-3">
-          AgentRadar
+    <div className="px-6 md:px-10 py-12 max-w-6xl mx-auto">
+      <div className="max-w-2xl mx-auto text-center">
+        <h1 className="font-display text-4xl sm:text-5xl font-extrabold tracking-tight text-ink-primary text-balance">
+          Real ratings for the tools engineers actually use
         </h1>
-        <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-          Real ratings and reviews for the AI coding tools, MCP servers, and
-          agent skills engineers actually use — not marketing pages.
+        <p className="mt-4 text-lg text-ink-secondary text-balance">
+          Reviews of AI coding tools, MCP servers, and agent skills from
+          people who&apos;ve run them — not marketing pages.
         </p>
       </div>
 
-      <div className="flex flex-wrap justify-center gap-2 mb-8">
+      <div
+        role="group"
+        aria-label="Filter by category"
+        className="mt-10 flex flex-wrap justify-center gap-2"
+      >
         {CATEGORY_FILTERS.map(filter => (
           <button
             key={filter ?? 'all'}
             type="button"
+            aria-pressed={category === filter}
             onClick={() => setCategory(filter)}
             className={clsx(
-              'px-4 py-2 rounded-full text-sm font-semibold border transition',
+              'px-4 py-1.5 rounded-full font-mono text-xs uppercase tracking-wider font-semibold border transition',
               category === filter
-                ? 'bg-primary-600 text-white border-primary-600'
-                : 'bg-white text-gray-700 border-gray-300 hover:border-primary-400',
+                ? 'bg-signal text-white border-signal'
+                : 'bg-surface text-ink-secondary border-line hover:border-signal-text',
             )}
           >
             {filter ? CATEGORY_LABELS[filter] : 'All'}
@@ -50,25 +52,25 @@ const ToolCatalog = () => {
       </div>
 
       {isError && (
-        <p className="text-center text-red-500">
+        <p className="mt-10 text-center text-signal-text font-semibold">
           Failed to load tools. Please try again later.
         </p>
       )}
 
       {isLoading ? (
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           <SkeletonLoader />
           <SkeletonLoader />
           <SkeletonLoader />
         </div>
       ) : tools.length > 0 ? (
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {tools.map(tool => (
             <ToolCard key={tool.id} tool={tool} />
           ))}
         </div>
       ) : (
-        <p className="text-center text-gray-500 italic">
+        <p className="mt-10 text-center text-ink-muted italic">
           No tools in this category yet.
         </p>
       )}
@@ -84,7 +86,7 @@ export default function Home() {
         description="Real ratings and reviews for the AI coding tools, MCP servers, and agent skills engineers actually use."
         path="/"
       />
-      <main className={inter.className}>
+      <main>
         <ToolsProvider>
           <ToolCatalog />
         </ToolsProvider>

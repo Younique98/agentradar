@@ -13,7 +13,13 @@ interface StarProps {
   // users. Defaults to true for StarRating's standalone usage, where
   // this span IS the interactive control.
   interactive?: boolean;
+  size?: 'sm' | 'lg';
 }
+
+const SIZE_CLASS: Record<'sm' | 'lg', string> = {
+  sm: 'text-base',
+  lg: 'text-3xl',
+};
 
 const Star: React.FC<StarProps> = ({
   starId,
@@ -22,10 +28,17 @@ const Star: React.FC<StarProps> = ({
   onKeyDown,
   allowUserInput,
   interactive = true,
+  size = 'lg',
 }) => {
+  const markedClass = marked ? 'text-signal-text' : 'text-ink-muted';
+
   if (!interactive) {
     return (
-      <span data-star-id={starId} className="text-3xl" aria-hidden="true">
+      <span
+        data-star-id={starId}
+        className={`${SIZE_CLASS[size]} ${markedClass}`}
+        aria-hidden="true"
+      >
         {marked ? '★' : '☆'}
       </span>
     );
@@ -34,7 +47,7 @@ const Star: React.FC<StarProps> = ({
   return (
     <span
       data-star-id={starId}
-      className="text-3xl cursor-pointer text-primary-600"
+      className={`${SIZE_CLASS[size]} ${markedClass} cursor-pointer`}
       role="radio"
       aria-checked={marked}
       tabIndex={allowUserInput ? 0 : -1}
