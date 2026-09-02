@@ -82,7 +82,7 @@ export default function Home() {
   return (
     <>
       <Seo
-        title="AgentRadar"
+        title="ToolTest"
         description="Real ratings and reviews for the AI coding tools, MCP servers, and agent skills engineers actually use."
         path="/"
       />

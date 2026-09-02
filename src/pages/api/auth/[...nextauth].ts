@@ -2,7 +2,7 @@ import NextAuth, { NextAuthOptions } from 'next-auth';
 import GitHubProvider from 'next-auth/providers/github';
 
 // GitHub OAuth, scoped to read-only profile access (the default
-// `read:user` scope — no `repo` scope, since AgentRadar has no reason to
+// `read:user` scope — no `repo` scope, since ToolTest has no reason to
 // touch anyone's repositories). This exists for exactly one purpose: tying
 // each review to a real, checkable GitHub identity instead of a free-text
 // name anyone could type. See ReviewForm.tsx and /api/tools/[slug].ts,

@@ -1,4 +1,4 @@
-# AgentRadar
+# ToolTest
 
 A review board where engineers rate and review the AI coding tools, MCP
 servers, and agent skills they've actually used in production — not
@@ -10,7 +10,7 @@ Teams are adopting AI coding tools faster than they can evaluate them, and
 the discovery layer is already crowded — Anthropic's own MCP registry,
 Glama, Smithery, and PulseMCP all catalog thousands of MCP servers. None of
 them are a review platform: they're crawled or claimed listings, not honest
-signal from engineers who've actually used a tool in production. AgentRadar
+signal from engineers who've actually used a tool in production. ToolTest
 isn't competing to be another catalog. It's the review layer those
 catalogs don't have — real star ratings and written reviews, each tied to
 a verified GitHub identity so a rating can't be spoofed by the vendor

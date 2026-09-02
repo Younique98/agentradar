@@ -46,7 +46,7 @@ export const Navbar = () => {
           href="/"
           className="font-display text-xl font-extrabold tracking-tight text-ink-primary"
         >
-          Agent<span className="text-signal-text">Radar</span>
+          Tool<span className="text-signal-text">Test</span>
         </Link>
 
         <nav className="flex items-center gap-6">

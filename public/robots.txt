@@ -24,4 +24,4 @@ User-agent: Meta-ExternalAgent
 Allow: /
 Disallow: /api/
 
-Sitemap: https://agentradar.app/sitemap.xml
+Sitemap: https://tooltest.co/sitemap.xml

@@ -17,7 +17,7 @@
   --ink-primary: #10171a;
   --ink-secondary: #45585d;
   --ink-muted: #59696d;
-  /* The signal color - AgentRadar's one accent, a warm amber ping against
+  /* The signal color - ToolTest's one accent, a warm amber ping against
      the app's cool slate neutrals. Fill (buttons/backgrounds with white
      text) needs to stay dark enough for that pairing in both themes, so
      it doesn't move with color-scheme; text usage (links, the rating
