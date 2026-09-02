@@ -3,7 +3,8 @@ type Review = {
   tool_id: number;
   rating: number;
   review: string | null;
-  author: string;
+  author_github_id: number;
+  author_login: string;
 };
 
 export default Review;

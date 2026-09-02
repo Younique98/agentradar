@@ -59,7 +59,14 @@ const ToolReviews = () => {
               className="rounded-xl border border-line bg-surface p-5"
             >
               <div className="flex items-center justify-between gap-3">
-                <p className="font-display font-bold text-ink-primary">{review.author}</p>
+                <a
+                  href={`https://github.com/${review.author_login}`}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="font-display font-bold text-ink-primary hover:underline"
+                >
+                  @{review.author_login}
+                </a>
                 <StarRating
                   rating={review.rating}
                   aria-label={`Rating: ${review.rating} stars`}

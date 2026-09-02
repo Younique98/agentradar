@@ -11,13 +11,23 @@ CREATE TABLE IF NOT EXISTS tools (
     created_at TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 
+-- author_github_id is the authoritative identity: it comes from the
+-- caller's authenticated GitHub session (see /api/auth/[...nextauth].ts
+-- and /api/tools/[slug].ts), never from client-submitted form input, which
+-- is what makes a review here mean something a free-text "author" field
+-- couldn't. author_login is a display-only cache of the GitHub username at
+-- review time, not itself a source of truth. The UNIQUE constraint means
+-- one person has one review per tool — resubmitting updates it rather than
+-- stacking duplicate reviews from the same account.
 CREATE TABLE IF NOT EXISTS reviews (
     id SERIAL PRIMARY KEY,
     tool_id INT NOT NULL REFERENCES tools(id) ON DELETE CASCADE,
     rating INT CHECK (rating BETWEEN 1 AND 5),
     review TEXT,
-    author VARCHAR(255) NOT NULL,
-    created_at TIMESTAMPTZ NOT NULL DEFAULT now()
+    author_github_id BIGINT NOT NULL,
+    author_login VARCHAR(255) NOT NULL,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+    UNIQUE (tool_id, author_github_id)
 );
 
 CREATE INDEX IF NOT EXISTS reviews_tool_id_idx ON reviews(tool_id);

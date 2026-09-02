@@ -23,7 +23,6 @@ interface ToolDetailResponse {
 interface NewReview {
   rating: number;
   review?: string;
-  author: string;
 }
 
 interface IToolDetailContext {

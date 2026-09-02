@@ -13,8 +13,22 @@ const mockToolResponse = {
     review_count: 2,
   },
   reviews: [
-    { id: 1, tool_id: 1, rating: 5, review: 'Great tool!', author: 'Jane' },
-    { id: 2, tool_id: 1, rating: 3, review: null, author: 'John' },
+    {
+      id: 1,
+      tool_id: 1,
+      rating: 5,
+      review: 'Great tool!',
+      author_github_id: 101,
+      author_login: 'jane-dev',
+    },
+    {
+      id: 2,
+      tool_id: 1,
+      rating: 3,
+      review: null,
+      author_github_id: 102,
+      author_login: 'john-dev',
+    },
   ],
 };
 
@@ -30,11 +44,11 @@ describe('ToolReviews Component', () => {
     customRender(<ToolReviews />);
 
     await waitFor(() => {
-      expect(screen.getByText('Jane')).toBeInTheDocument();
+      expect(screen.getByText('@jane-dev')).toBeInTheDocument();
     });
 
     expect(screen.getByText('Great tool!')).toBeInTheDocument();
-    expect(screen.getByText('John')).toBeInTheDocument();
+    expect(screen.getByText('@john-dev')).toBeInTheDocument();
     expect(screen.getByText('No written review')).toBeInTheDocument();
   });
 

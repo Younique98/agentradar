@@ -3,22 +3,29 @@
 > A review board where engineers rate and review the AI coding tools, MCP
 > servers, and agent skills they've actually used in production.
 
-Teams are adopting AI coding tools faster than they can evaluate them.
-AgentRadar gives a shared, honest signal — star ratings and written
-reviews from real usage — beyond vendor pages and marketing claims.
-Tools are organized by category (IDE plugin, CLI, MCP server, agent
-skill) and can be filtered and browsed from the home page.
+Teams are adopting AI coding tools faster than they can evaluate them, and
+existing MCP/tool directories (Anthropic's own registry, Glama, Smithery,
+PulseMCP) are crawled or claimed catalogs, not review platforms. AgentRadar
+is the review layer: star ratings and written reviews from real usage,
+each tied to a verified GitHub identity so a rating can't be posted
+anonymously or as someone else. Tools are organized by category (IDE
+plugin, CLI, MCP server, agent skill) and can be filtered and browsed
+from the home page.
 
 ## Key pages
 
 - [Home](https://agentradar.app/): Browse and filter the tool catalog by
   category.
 - Tool detail pages (`/tools/[slug]`): A specific tool's description,
-  average rating, and reviews, with a form to submit a new review.
+  average rating, and reviews, with a form to submit a new review
+  (requires GitHub sign-in).
 
 ## Technical implementation
 
 - **Framework:** Next.js (Pages Router), TypeScript, Tailwind CSS
+- **Auth:** NextAuth with GitHub OAuth; every review is attributed to the
+  reviewer's authenticated GitHub account server-side, never to a
+  client-submitted name
 - **Database:** PostgreSQL
 - **State management:** React Query
 
