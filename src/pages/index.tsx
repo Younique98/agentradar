@@ -11,6 +11,7 @@ const CATEGORY_FILTERS: (ToolCategory | null)[] = [
   'ide_plugin',
   'mcp_server',
   'agent_skill',
+  'other',
 ];
 
 const ToolCatalog = () => {
