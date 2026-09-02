@@ -33,18 +33,10 @@ INSERT INTO tools (slug, name, category, description, homepage_url) VALUES
 ('aider', 'Aider', 'cli', 'Terminal-based AI pair programming tool that edits code in your local git repo.', 'https://aider.chat')
 ON CONFLICT (slug) DO NOTHING;
 
--- Insert sample reviews
-INSERT INTO reviews (tool_id, rating, review, author)
-SELECT id, 5, 'Handles multi-file refactors better than anything else I''ve tried.', 'Demo User'
-FROM tools WHERE slug = 'claude-code'
-ON CONFLICT DO NOTHING;
-
-INSERT INTO reviews (tool_id, rating, review, author)
-SELECT id, 4, 'Great for quick completions, less reliable on larger architectural changes.', 'A. Developer'
-FROM tools WHERE slug = 'github-copilot'
-ON CONFLICT DO NOTHING;
-
-INSERT INTO reviews (tool_id, rating, review, author)
-SELECT id, 5, 'The agent mode saved us a full day on a gnarly migration.', 'Demo User'
-FROM tools WHERE slug = 'cursor'
-ON CONFLICT DO NOTHING;
+-- No seeded reviews. Every review on this platform must come from a real,
+-- authenticated submission (see the auth work tracked separately) — a
+-- fabricated review attributed to a fake name on a real product (previously
+-- seeded here for Claude Code, GitHub Copilot, and Cursor) is a false
+-- endorsement risk against real companies, not harmless placeholder content.
+-- New tools should launch with zero reviews and an honest "no reviews yet"
+-- state rather than manufactured social proof.
