@@ -27,6 +27,13 @@ const ToolCatalog = () => {
           Reviews of AI coding tools, MCP servers, and agent skills from
           people who&apos;ve run them — not marketing pages.
         </p>
+        <p className="mt-3 font-mono text-xs uppercase tracking-wider font-semibold text-ink-muted">
+          {tools.length > 0 ? `${tools.length} tools tracked` : 'Tracking AI coding tools'}
+          {' · '}
+          every review verified by GitHub sign-in
+          {' · '}
+          zero fake reviews, ever
+        </p>
       </div>
 
       <div

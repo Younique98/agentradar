@@ -59,12 +59,18 @@ const ToolDetail = () => {
             {tool.name}
           </h1>
           <div className="mt-2 flex items-center gap-2">
-            <StarRating rating={Math.round(tool.avg_rating ?? 0)} />
-            <span className="font-mono text-sm text-ink-muted">
-              {tool.review_count === 0
-                ? 'no reviews yet'
-                : `${tool.review_count} review${tool.review_count === 1 ? '' : 's'}`}
-            </span>
+            {tool.review_count === 0 ? (
+              <span className="inline-flex items-center rounded-full border border-signal-text/40 px-2.5 py-1 font-mono text-xs font-semibold text-signal-text">
+                Not yet rated — be the first, verified by GitHub
+              </span>
+            ) : (
+              <>
+                <StarRating rating={Math.round(tool.avg_rating ?? 0)} />
+                <span className="font-mono text-sm text-ink-muted">
+                  {tool.review_count} review{tool.review_count === 1 ? '' : 's'}
+                </span>
+              </>
+            )}
           </div>
         </div>
 
