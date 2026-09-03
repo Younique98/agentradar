@@ -7,6 +7,7 @@ import { sanitizeInput } from '@/utils/sanitize';
 import logger from '@/utils/logger';
 import { applySecurityHeaders } from '@/utils/security';
 import { authOptions } from '@/pages/api/auth/[...nextauth]';
+import { verifyCsrfToken } from '@/utils/csrf';
 
 const DEFAULT_PAGE_NUMBER = 1;
 const DEFAULT_PAGE_SIZE = 10;
@@ -72,6 +73,21 @@ async function toolHandler(req: NextApiRequest, res: NextApiResponse) {
         return res.status(401).json({
           error: 'Unauthorized',
           message: 'Sign in with GitHub to leave a review.',
+        });
+      }
+
+      // Belt-and-suspenders on top of the SameSite session cookie + CORS
+      // origin allowlist: require the CSRF token NextAuth issues (fetched
+      // client-side via getCsrfToken()) to match the visitor's own cookie,
+      // so a cross-site request can't ride an authenticated session even if
+      // SameSite or the CORS check were ever misconfigured or bypassed.
+      if (!verifyCsrfToken(req, req.headers['x-csrf-token'])) {
+        logger.warn(
+          `POST /api/tools/${slug} - 403 - Missing/invalid CSRF token from ${req.socket.remoteAddress}`,
+        );
+        return res.status(403).json({
+          error: 'Invalid CSRF token',
+          message: 'Your session appears out of date. Please refresh and try again.',
         });
       }
 

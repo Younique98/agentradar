@@ -14,7 +14,7 @@ const nextConfig = {
               style-src 'self' 'unsafe-inline' https://fonts.googleapis.com;
               img-src 'self' data:;
               font-src 'self' https://fonts.gstatic.com;
-              connect-src 'self' https://your-api-domain.com;
+              connect-src 'self';
               object-src 'none';
               frame-ancestors 'self';
               upgrade-insecure-requests;
