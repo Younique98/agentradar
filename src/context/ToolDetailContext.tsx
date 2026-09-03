@@ -11,6 +11,7 @@ import {
   useQueryClient,
   UseMutationResult,
 } from '@tanstack/react-query';
+import { getCsrfToken } from 'next-auth/react';
 import Tool from '@/data/Tool';
 import Review from '@/data/Review';
 import { useError } from '@/context/ErrorContext';
@@ -99,9 +100,16 @@ export const ToolDetailProvider = ({
   const submitReview = useMutation({
     mutationFn: async (newReview: NewReview) => {
       try {
+        // NextAuth's own CSRF token (see src/utils/csrf.ts on the API side)
+        // — fetched fresh each submit rather than cached, since it's tied
+        // to the httpOnly cookie NextAuth manages for the session.
+        const csrfToken = await getCsrfToken();
         const response = await fetch(`/api/tools/${slug}`, {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+          headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-Token': csrfToken ?? '',
+          },
           body: JSON.stringify(newReview),
         });
 
