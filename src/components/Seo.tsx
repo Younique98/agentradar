@@ -1,9 +1,7 @@
 import Head from 'next/head';
 
-// Placeholder canonical domain until this is deployed to a real one -
-// keeps title/OG/canonical tags internally consistent in the meantime.
-export const SITE_URL = 'https://agentradar.app';
-export const SITE_NAME = 'AgentRadar';
+export const SITE_URL = 'https://tooltest.co';
+export const SITE_NAME = 'ToolTest';
 
 interface SeoProps {
   title: string;

@@ -1,10 +1,12 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
+import { getServerSession } from 'next-auth';
 import pool from '@/utils/db';
 import { withCors } from '@/lib/middleware/cors';
 import { withRateLimit } from '@/lib/middleware/rateLimit';
 import { sanitizeInput } from '@/utils/sanitize';
 import logger from '@/utils/logger';
 import { applySecurityHeaders } from '@/utils/security';
+import { authOptions } from '@/pages/api/auth/[...nextauth]';
 
 const DEFAULT_PAGE_NUMBER = 1;
 const DEFAULT_PAGE_SIZE = 10;
@@ -58,7 +60,22 @@ async function toolHandler(req: NextApiRequest, res: NextApiResponse) {
     }
   } else if (req.method === 'POST') {
     try {
-      const { rating, review, author } = req.body;
+      // The reviewer's identity comes ONLY from the authenticated session,
+      // never from the request body — a client-submitted name is exactly
+      // the spoofing hole this endpoint used to have (anyone could type
+      // "Anthropic" or a competitor's name and post a review as them).
+      const session = await getServerSession(req, res, authOptions);
+      if (!session?.user?.githubId || !session.user.githubLogin) {
+        logger.warn(
+          `POST /api/tools/${slug} - 401 - Unauthenticated review attempt from ${req.socket.remoteAddress}`,
+        );
+        return res.status(401).json({
+          error: 'Unauthorized',
+          message: 'Sign in with GitHub to leave a review.',
+        });
+      }
+
+      const { rating, review } = req.body;
       if (!rating || rating < 1 || rating > 5) {
         logger.warn(
           `POST /api/tools/${slug} - 400 - Invalid rating value from ${req.socket.remoteAddress}`,
@@ -66,12 +83,6 @@ async function toolHandler(req: NextApiRequest, res: NextApiResponse) {
         return res.status(400).json({
           error: 'Invalid rating value',
           message: 'Rating must be between 1 and 5.',
-        });
-      }
-      if (!author || typeof author !== 'string') {
-        return res.status(400).json({
-          error: 'Invalid author value',
-          message: 'Author name is required.',
         });
       }
 
@@ -84,14 +95,30 @@ async function toolHandler(req: NextApiRequest, res: NextApiResponse) {
       }
 
       const sanitizedReview = review ? sanitizeInput(review) : null;
-      const sanitizedAuthor = sanitizeInput(author);
 
+      // ON CONFLICT lets someone update their own review by resubmitting,
+      // rather than either silently failing or letting the same GitHub
+      // account stack up multiple reviews for one tool.
       const result = await pool.query(
-        'INSERT INTO reviews (tool_id, rating, review, author) VALUES ($1, $2, $3, $4) RETURNING *',
-        [toolResult.rows[0].id, rating, sanitizedReview || null, sanitizedAuthor],
+        `INSERT INTO reviews (tool_id, rating, review, author_github_id, author_login)
+         VALUES ($1, $2, $3, $4, $5)
+         ON CONFLICT (tool_id, author_github_id)
+         DO UPDATE SET
+           rating = EXCLUDED.rating,
+           review = EXCLUDED.review,
+           author_login = EXCLUDED.author_login,
+           created_at = now()
+         RETURNING *`,
+        [
+          toolResult.rows[0].id,
+          rating,
+          sanitizedReview || null,
+          session.user.githubId,
+          session.user.githubLogin,
+        ],
       );
       logger.info(
-        `POST /api/tools/${slug} - 201 - Review submitted by ${author} from ${req.socket.remoteAddress}`,
+        `POST /api/tools/${slug} - 201 - Review submitted by GitHub user ${session.user.githubLogin} from ${req.socket.remoteAddress}`,
       );
       return res
         .status(201)

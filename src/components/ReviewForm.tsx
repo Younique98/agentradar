@@ -1,13 +1,13 @@
 import toast from 'react-hot-toast';
 import clsx from 'clsx';
 import { useForm } from 'react-hook-form';
+import { signIn, useSession } from 'next-auth/react';
 import Star from './Star';
 import { Button } from './Button';
 import { useToolDetail } from '@/context/ToolDetailContext';
 import { useError } from '@/context/ErrorContext';
 
 type TReviewFormData = {
-  author: string;
   rating: number;
   review?: string;
 };
@@ -21,6 +21,7 @@ const inputClass =
 const labelClass = 'block text-sm font-semibold text-ink-secondary mb-1';
 
 export const ReviewForm: React.FC<IReviewForm> = ({ toolName }) => {
+  const { data: session, status } = useSession();
   const { submitReview } = useToolDetail();
   const {
     handleSubmit,
@@ -43,7 +44,6 @@ export const ReviewForm: React.FC<IReviewForm> = ({ toolName }) => {
       await submitReview.mutateAsync({
         rating: data.rating,
         review: data.review,
-        author: data.author,
       });
       toast.success('Review submitted successfully!');
       reset();
@@ -67,6 +67,31 @@ export const ReviewForm: React.FC<IReviewForm> = ({ toolName }) => {
     }
   };
 
+  // Every review is tied to whoever is signed in via GitHub — there is no
+  // free-text name field, on purpose. That's what makes a review here mean
+  // something a review site with an unauthenticated "your name" box
+  // doesn't: it can't be posted as someone else.
+  if (status !== 'authenticated') {
+    return (
+      <div className="rounded-xl border border-line bg-surface p-6 mb-8 md:w-3/4 mx-auto text-center space-y-3">
+        <h2 className="font-display text-lg font-bold text-ink-primary">
+          Review {toolName}
+        </h2>
+        <p className="text-sm text-ink-secondary">
+          Reviews are tied to a real GitHub account, so ratings can&rsquo;t be
+          faked or posted as someone else.
+        </p>
+        <Button
+          type="button"
+          onClick={() => signIn('github')}
+          disabled={status === 'loading'}
+        >
+          Sign in with GitHub to review
+        </Button>
+      </div>
+    );
+  }
+
   return (
     <form
       role="form"
@@ -74,26 +99,13 @@ export const ReviewForm: React.FC<IReviewForm> = ({ toolName }) => {
       onSubmit={handleSubmit(onSubmit)}
       className="rounded-xl border border-line bg-surface p-6 mb-8 md:w-3/4 mx-auto space-y-4"
     >
-      <h2 id="review-form-title" className="font-display text-lg font-bold text-ink-primary">
-        Review {toolName}
-      </h2>
-
-      {/* Author Name */}
-      <div>
-        <label className={labelClass} htmlFor="author">
-          Your Name
-        </label>
-        <input
-          id="author"
-          aria-labelledby="author"
-          type="text"
-          {...register('author', { required: 'Name is required.' })}
-          placeholder="Your name"
-          className={inputClass}
-        />
-        {errors.author && (
-          <p className="mt-1 text-sm text-signal-text">{errors.author.message}</p>
-        )}
+      <div className="flex items-center justify-between gap-3">
+        <h2 id="review-form-title" className="font-display text-lg font-bold text-ink-primary">
+          Review {toolName}
+        </h2>
+        <p className="text-xs text-ink-muted">
+          Posting as <span className="font-semibold">@{session.user?.githubLogin}</span>
+        </p>
       </div>
 
       {/* Star Rating */}

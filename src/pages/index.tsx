@@ -11,6 +11,7 @@ const CATEGORY_FILTERS: (ToolCategory | null)[] = [
   'ide_plugin',
   'mcp_server',
   'agent_skill',
+  'other',
 ];
 
 const ToolCatalog = () => {
@@ -25,6 +26,13 @@ const ToolCatalog = () => {
         <p className="mt-4 text-lg text-ink-secondary text-balance">
           Reviews of AI coding tools, MCP servers, and agent skills from
           people who&apos;ve run them — not marketing pages.
+        </p>
+        <p className="mt-3 font-mono text-xs uppercase tracking-wider font-semibold text-ink-muted">
+          {tools.length > 0 ? `${tools.length} tools tracked` : 'Tracking AI coding tools'}
+          {' · '}
+          every review verified by GitHub sign-in
+          {' · '}
+          zero fake reviews, ever
         </p>
       </div>
 
@@ -82,7 +90,7 @@ export default function Home() {
   return (
     <>
       <Seo
-        title="AgentRadar"
+        title="ToolTest"
         description="Real ratings and reviews for the AI coding tools, MCP servers, and agent skills engineers actually use."
         path="/"
       />
