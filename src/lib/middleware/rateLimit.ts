@@ -18,6 +18,21 @@ const DEFAULT_RATE_LIMIT_CONFIG: RateLimitConfig = {
   windowMs: 60 * 1000, // 1 minute
 };
 
+// Plan-aware limit for review submission (POST /api/tools/[slug]) — see
+// src/utils/users.ts#getReviewRateLimitConfig, which picks between these
+// two based on the signed-in user's plan. FREE keeps the previous default
+// (10/min); PREMIUM gets a materially higher budget, same
+// free-always-works / premium-gets-more shape as BoardKit's rate-limit
+// change. This is still the same in-memory, per-instance limiter as
+// everything else in this file — no Redis dependency introduced.
+export const REVIEW_RATE_LIMIT_FREE: RateLimitConfig =
+  DEFAULT_RATE_LIMIT_CONFIG;
+export const PREMIUM_RATE_LIMIT_MULTIPLIER = 5;
+export const REVIEW_RATE_LIMIT_PREMIUM: RateLimitConfig = {
+  limit: REVIEW_RATE_LIMIT_FREE.limit * PREMIUM_RATE_LIMIT_MULTIPLIER,
+  windowMs: REVIEW_RATE_LIMIT_FREE.windowMs,
+};
+
 export function withRateLimit(
   handler: Function,
   config: RateLimitConfig = DEFAULT_RATE_LIMIT_CONFIG,

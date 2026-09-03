@@ -8,6 +8,7 @@ import logger from '@/utils/logger';
 import { applySecurityHeaders } from '@/utils/security';
 import { authOptions } from '@/pages/api/auth/[...nextauth]';
 import { verifyCsrfToken } from '@/utils/csrf';
+import { getUserPlan, getReviewRateLimitConfig } from '@/utils/users';
 
 const DEFAULT_PAGE_NUMBER = 1;
 const DEFAULT_PAGE_SIZE = 10;
@@ -40,8 +41,11 @@ async function toolHandler(req: NextApiRequest, res: NextApiResponse) {
         parseInt(req.query.pageSize as string) || DEFAULT_PAGE_SIZE;
       const offset = (page - 1) * pageSize;
 
+      // Reviews left by a premium-plan reviewer surface first (featured
+      // DESC), newest-first within each group — see the `featured` column
+      // added by migrations/0001_add_billing_and_featured_reviews.sql.
       const reviewsResult = await pool.query(
-        `SELECT * FROM reviews WHERE tool_id = $1 ORDER BY id DESC LIMIT $2 OFFSET $3`,
+        `SELECT * FROM reviews WHERE tool_id = $1 ORDER BY featured DESC, id DESC LIMIT $2 OFFSET $3`,
         [toolResult.rows[0].id, pageSize, offset],
       );
 
@@ -87,7 +91,8 @@ async function toolHandler(req: NextApiRequest, res: NextApiResponse) {
         );
         return res.status(403).json({
           error: 'Invalid CSRF token',
-          message: 'Your session appears out of date. Please refresh and try again.',
+          message:
+            'Your session appears out of date. Please refresh and try again.',
         });
       }
 
@@ -112,17 +117,26 @@ async function toolHandler(req: NextApiRequest, res: NextApiResponse) {
 
       const sanitizedReview = review ? sanitizeInput(review) : null;
 
+      // Snapshot the reviewer's plan at submission time into `featured` —
+      // premium reviews get priority placement in the listing (see the GET
+      // branch above and ToolReviews.tsx). Deliberately a snapshot, not a
+      // live join against `users`, so a later upgrade/downgrade doesn't
+      // retroactively change past reviews.
+      const plan = await getUserPlan(session.user.githubId);
+      const featured = plan === 'PREMIUM';
+
       // ON CONFLICT lets someone update their own review by resubmitting,
       // rather than either silently failing or letting the same GitHub
       // account stack up multiple reviews for one tool.
       const result = await pool.query(
-        `INSERT INTO reviews (tool_id, rating, review, author_github_id, author_login)
-         VALUES ($1, $2, $3, $4, $5)
+        `INSERT INTO reviews (tool_id, rating, review, author_github_id, author_login, featured)
+         VALUES ($1, $2, $3, $4, $5, $6)
          ON CONFLICT (tool_id, author_github_id)
          DO UPDATE SET
            rating = EXCLUDED.rating,
            review = EXCLUDED.review,
            author_login = EXCLUDED.author_login,
+           featured = EXCLUDED.featured,
            created_at = now()
          RETURNING *`,
         [
@@ -131,6 +145,7 @@ async function toolHandler(req: NextApiRequest, res: NextApiResponse) {
           sanitizedReview || null,
           session.user.githubId,
           session.user.githubLogin,
+          featured,
         ],
       );
       logger.info(
@@ -159,5 +174,22 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse,
 ) {
+  // Review submission gets a plan-aware rate limit (premium reviewers get
+  // a higher budget - see src/utils/users.ts#getReviewRateLimitConfig);
+  // GET keeps the default. This does mean the session is resolved twice on
+  // a POST (once here, once again inside toolHandler for the auth/CSRF
+  // checks) - an acceptable cost for a JWT-cookie session lookup, and it
+  // keeps rate limiting a decision made before the handler runs, same as
+  // every other route.
+  if (req.method === 'POST') {
+    const session = await getServerSession(req, res, authOptions);
+    const rateLimitConfig = await getReviewRateLimitConfig(
+      session?.user?.githubId,
+    );
+    return await withCors(withRateLimit(toolHandler, rateLimitConfig))(
+      req,
+      res,
+    );
+  }
   return await withCors(withRateLimit(toolHandler))(req, res);
 }

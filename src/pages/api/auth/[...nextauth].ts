@@ -1,5 +1,6 @@
 import NextAuth, { NextAuthOptions } from 'next-auth';
 import GitHubProvider from 'next-auth/providers/github';
+import { upsertUserOnSignIn } from '@/utils/users';
 
 // GitHub OAuth, scoped to read-only profile access (the default
 // `read:user` scope — no `repo` scope, since ToolTest has no reason to
@@ -31,9 +32,25 @@ export const authOptions: NextAuthOptions = {
         const githubProfile = profile as unknown as {
           id: number;
           login: string;
+          email?: string | null;
         };
         token.githubId = githubProfile.id;
         token.githubLogin = githubProfile.login;
+
+        // Fresh sign-in — make sure a `users` row exists for this GitHub
+        // account so it's there the first time they hit a DB-backed route
+        // (plan lookups, Stripe checkout, etc). Never block sign-in on a
+        // DB hiccup — the row gets created lazily on the next sign-in or
+        // the first Stripe checkout.
+        try {
+          await upsertUserOnSignIn({
+            githubId: githubProfile.id,
+            githubLogin: githubProfile.login,
+            email: githubProfile.email ?? null,
+          });
+        } catch (error) {
+          console.error('Failed to upsert user on sign-in:', error);
+        }
       }
       return token;
     },
