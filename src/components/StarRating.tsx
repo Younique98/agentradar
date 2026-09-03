@@ -56,7 +56,7 @@ const StarRating: React.FC<StarRatingProps> = ({
   };
 
   return (
-    <section className="flex items-center" aria-labelledby={labelId}>
+    <div className="flex items-center">
       <h2 id={labelId} className="sr-only">
         {allowUserInput ? 'Select a star rating' : 'User rating'}
       </h2>
@@ -81,7 +81,7 @@ const StarRating: React.FC<StarRatingProps> = ({
           disabled={selectedRating === 0}
         />
       )}
-    </section>
+    </div>
   );
 };
 
