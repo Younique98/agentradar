@@ -25,6 +25,8 @@ itself or a competitor.
 - **Database:** PostgreSQL
 - **API:** Next.js API routes, rate-limited and CORS-restricted
 - **Testing:** Jest, React Testing Library
+- **Billing:** Stripe Checkout + Billing Portal for the optional $9/mo
+  Premium plan
 
 ## Features
 
@@ -36,6 +38,9 @@ itself or a competitor.
   account (sign-in required), sanitized and rate-limited server-side
 - One review per person per tool — resubmitting updates your existing
   review rather than stacking duplicates
+- Optional $9/mo Premium plan (Stripe Checkout + Billing Portal): a higher
+  review-submission rate limit, and reviews are marked "Featured" and
+  sorted first on the tool page when left by a Premium reviewer
 
 ## Getting Started
 
@@ -52,6 +57,7 @@ itself or a competitor.
    with your connection details, then seed it:
    ```sh
    psql -U <user> -d <database> -f seed.sql
+   psql -U <user> -d <database> -f migrations/0001_add_billing_and_featured_reviews.sql
    ```
 4. Create a GitHub OAuth App at
    [github.com/settings/developers](https://github.com/settings/developers)
@@ -60,7 +66,11 @@ itself or a competitor.
    (`openssl rand -base64 32`) to `.env.local` — see `.env.example` for the
    full list. Without this, the tool catalog and pages still work, but
    nobody can sign in to leave a review.
-5. Start the development server:
+5. (Optional) Set up Stripe for the Premium plan — add
+   `STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET`, and `STRIPE_PRICE_ID` to
+   `.env.local` (see `.env.example` for where to get each). Without these,
+   everything else works and `/api/stripe/checkout` just responds 503.
+6. Start the development server:
    ```sh
    npm run dev
    ```

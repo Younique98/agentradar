@@ -86,7 +86,9 @@ const ToolDetail = () => {
         )}
       </div>
 
-      <p className="mt-6 text-ink-secondary leading-relaxed">{tool.description}</p>
+      <p className="mt-6 text-ink-secondary leading-relaxed">
+        {tool.description}
+      </p>
 
       {tool.homepage_url && (
         <a
@@ -116,9 +118,9 @@ export default function ToolPage({ slug, initialData }: ToolPageProps) {
   );
 }
 
-export const getServerSideProps: GetServerSideProps<ToolPageProps> = async (
-  context,
-) => {
+export const getServerSideProps: GetServerSideProps<
+  ToolPageProps
+> = async context => {
   const slug = context.params?.slug as string;
 
   try {
@@ -139,7 +141,7 @@ export const getServerSideProps: GetServerSideProps<ToolPageProps> = async (
     }
 
     const reviewsResult = await pool.query(
-      `SELECT * FROM reviews WHERE tool_id = $1 ORDER BY id DESC LIMIT $2`,
+      `SELECT * FROM reviews WHERE tool_id = $1 ORDER BY featured DESC, id DESC LIMIT $2`,
       [toolResult.rows[0].id, PAGE_SIZE],
     );
 

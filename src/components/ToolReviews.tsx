@@ -56,17 +56,30 @@ const ToolReviews = () => {
           {reviews.map(review => (
             <li
               key={review.id}
-              className="rounded-xl border border-line bg-surface p-5"
+              className={clsx(
+                'rounded-xl border bg-surface p-5',
+                review.featured ? 'border-signal-text/40' : 'border-line',
+              )}
             >
               <div className="flex items-center justify-between gap-3">
-                <a
-                  href={`https://github.com/${review.author_login}`}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="font-display font-bold text-ink-primary hover:underline"
-                >
-                  @{review.author_login}
-                </a>
+                <div className="flex items-center gap-2 flex-wrap">
+                  <a
+                    href={`https://github.com/${review.author_login}`}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="font-display font-bold text-ink-primary hover:underline"
+                  >
+                    @{review.author_login}
+                  </a>
+                  {review.featured && (
+                    <span
+                      className="inline-flex items-center rounded-full border border-signal-text/40 px-2 py-0.5 font-mono text-[10px] font-semibold uppercase tracking-wider text-signal-text"
+                      title="This reviewer is on the Premium plan"
+                    >
+                      Featured
+                    </span>
+                  )}
+                </div>
                 <StarRating
                   rating={review.rating}
                   aria-label={`Rating: ${review.rating} stars`}
