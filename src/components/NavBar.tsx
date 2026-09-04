@@ -105,14 +105,6 @@ export const Navbar = () => {
         </Link>
 
         <nav className="flex items-center gap-6">
-          <a
-            href="https://github.com/Younique98/agentradar"
-            target="_blank"
-            rel="noreferrer"
-            className="font-mono text-xs uppercase tracking-wider font-semibold text-ink-secondary hover:text-ink-primary transition"
-          >
-            Source
-          </a>
           <AuthControl />
         </nav>
       </div>
