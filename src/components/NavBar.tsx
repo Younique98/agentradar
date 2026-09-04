@@ -49,7 +49,7 @@ const PlanBadge = () => {
       </span>
       <a
         href={isPremium ? '/api/stripe/portal' : '/api/stripe/checkout'}
-        className="font-mono text-xs uppercase tracking-wider font-semibold text-signal-text hover:underline"
+        className="font-mono text-xs uppercase tracking-wider font-semibold text-signal-text hover:underline rounded focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-signal-text"
       >
         {isPremium ? 'Manage' : `Upgrade — $${PREMIUM_MONTHLY_PRICE_USD}/mo`}
       </a>
